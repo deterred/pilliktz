@@ -1,7 +1,8 @@
-[gd_scene load_steps=6 format=3 uid="uid://bu76i0jyj7su2"]
+[gd_scene load_steps=9 format=3 uid="uid://bu76i0jyj7su2"]
 
 [ext_resource type="Script" path="res://scripts/world.gd" id="1_icop5"]
 [ext_resource type="PackedScene" uid="uid://d1w4a14s3bsh4" path="res://scenes/environment.tscn" id="1_n225s"]
+[ext_resource type="Texture2D" uid="uid://cwswpwl8ltsfg" path="res://addons/kenney_particle_pack/circle_05.png" id="3_7eno2"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_e1hm8"]
 sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
@@ -15,6 +16,12 @@ background_mode = 2
 sky = SubResource("Sky_ukggx")
 tonemap_mode = 2
 glow_enabled = true
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_l8vhu"]
+bg_color = Color(0.635294, 0.129412, 0.145098, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_iy1dx"]
+bg_color = Color(0.552941, 0.956863, 0.0235294, 1)
 
 [node name="World" type="Node"]
 script = ExtResource("1_icop5")
@@ -71,9 +78,71 @@ layout_mode = 2
 placeholder_text = "127.0.0.1"
 alignment = 1
 
+[node name="playernickname" type="LineEdit" parent="CanvasLayer/MainMenu/MarginContainer/VBoxContainer"]
+layout_mode = 2
+placeholder_text = "Nom de joueur"
+
+[node name="HUD" type="Control" parent="CanvasLayer"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="TextureRect" type="TextureRect" parent="CanvasLayer/HUD"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.03, 0.03)
+pivot_offset = Vector2(576, 324)
+texture = ExtResource("3_7eno2")
+stretch_mode = 5
+
+[node name="HealthBar" type="ProgressBar" parent="CanvasLayer/HUD"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 248.0
+offset_top = 53.0
+offset_right = -248.0
+offset_bottom = -561.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/background = SubResource("StyleBoxFlat_l8vhu")
+theme_override_styles/fill = SubResource("StyleBoxFlat_iy1dx")
+max_value = 3.0
+value = 3.0
+show_percentage = false
+
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/HUD"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -136.0
+offset_right = 1.0
+offset_bottom = 62.0
+grow_horizontal = 0
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="nickname" type="Label" parent="CanvasLayer/HUD/MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "0000000000"
+
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="."]
 _spawnable_scenes = PackedStringArray("res://scenes/player.tscn")
 spawn_path = NodePath("..")
 
 [connection signal="pressed" from="CanvasLayer/MainMenu/MarginContainer/VBoxContainer/HostButton" to="." method="_on_host_button_pressed"]
 [connection signal="pressed" from="CanvasLayer/MainMenu/MarginContainer/VBoxContainer/JoinButton" to="." method="_on_join_button_pressed"]
+[connection signal="spawned" from="MultiplayerSpawner" to="." method="_on_multiplayer_spawner_spawned"]

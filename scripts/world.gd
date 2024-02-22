@@ -2,11 +2,16 @@ extends Node
 
 @onready var main_menu = $CanvasLayer/MainMenu
 @onready var adress_entry = $CanvasLayer/MainMenu/MarginContainer/VBoxContainer/AdressEntry
+@onready var hud = $CanvasLayer/HUD
+@onready var healthBar = $CanvasLayer/HUD/HealthBar
+@onready var nicknameLab = $CanvasLayer/HUD/MarginContainer/nickname
+@onready var msg =$CanvasLayer/HUD/MarginContainer/LineEdit 
 
 const Player = preload("res://scenes/player.tscn")
 const PORT = 135;
 var enet_peer = ENetMultiplayerPeer.new();
-
+var local_player_character
+var peer_id 
 
 func _unhandled_input(event):
 	if Input.is_action_just_pressed("quit"):
@@ -17,28 +22,90 @@ func _unhandled_input(event):
 func _on_host_button_pressed():
 	print("host")
 	main_menu.hide();
+	hud.show();
 	enet_peer.create_server(PORT)
 	multiplayer.multiplayer_peer = enet_peer
 	multiplayer.peer_connected.connect(add_player)
-	#multiplayer.peer_disconnected.connect(remove_player)
-	
+	multiplayer.peer_disconnected.connect(remove_player)
+	nicknameLab.text = "SERVER"
 	add_player(multiplayer.get_unique_id())
 	
-	#upnp_setup()
+	upnp_setup()
 	
 
 
 func _on_join_button_pressed():
 	
 	main_menu.hide();
-	enet_peer.create_client("localhost", PORT);
+	hud.show();
+	nicknameLab.text = "CLI"
+	enet_peer.create_client(adress_entry.text, PORT);
 	multiplayer.multiplayer_peer = enet_peer;
 
 
-func add_player(peer_id=8):
+func add_player(peer_id):
 	print('joueur connecté ');
 	var player = Player.instantiate();
+	
+	
 	player.name = str(peer_id);
 	print(player.name);
+	print(str(multiplayer.get_unique_id()))
 	add_child(player);
+	#if peer_id != multiplayer.get_unique_id():
+	local_player_character = player
+	local_player_character.rpc("setnick", player.name)
 	
+	var x = randi()%12
+	var colors = ["33AFFF","33FFF3","33FF96","5EFF33","E9FF33","FF7133",\
+		 "3339FF","DD33FF","FF33B5","CBC6C7","302E2F","7C93B9"];
+	#player.apply_player_color(colors[x])
+	
+	if player.is_multiplayer_authority():
+		player.health_changed.connect(update_health_bar);
+
+
+	
+		
+
+	
+	
+func remove_player(peer_id):
+	var player = get_node_or_null(str(peer_id));
+	if player:
+		player.queue_free();
+	
+
+	
+func update_health_bar(health_val):
+	print("update_health_bar")
+	healthBar.value = health_val;
+	
+
+
+
+func _on_multiplayer_spawner_spawned(node):
+	if node.is_multiplayer_authority():
+		node.health_changed.connect(update_health_bar);
+		
+
+
+func upnp_setup():
+	var upnp = UPNP.new()
+	
+	var discover_result = upnp.discover()
+	assert(discover_result == UPNP.UPNP_RESULT_SUCCESS, \
+		"UPNP Discover Failed! Error %s" % discover_result)
+
+	assert(upnp.get_gateway() and upnp.get_gateway().is_valid_gateway(), \
+		"UPNP Invalid Gateway!")
+
+	var map_result = upnp.add_port_mapping(PORT)
+	assert(map_result == UPNP.UPNP_RESULT_SUCCESS, \
+		"UPNP Port Mapping Failed! Error %s" % map_result)
+	
+	print("Success! Join Address: %s" % upnp.query_external_address())
+
+
+func _on_button_pressed():
+	local_player_character.rpc("setnick", local_player_character.name)
