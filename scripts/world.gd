@@ -30,12 +30,10 @@ func _on_host_button_pressed():
 	nicknameLab.text = "SERVER"
 	add_player(multiplayer.get_unique_id())
 	
-	upnp_setup()
+	#upnp_setup()
 	
-
 
 func _on_join_button_pressed():
-	
 	main_menu.hide();
 	hud.show();
 	nicknameLab.text = "CLI"
@@ -47,28 +45,20 @@ func add_player(peer_id):
 	print('joueur connecté ');
 	var player = Player.instantiate();
 	
-	
+	var colors = ["000000", "33AFFF","33FFF3","33FF96","5EFF33","E9FF33","FF7133",\
+			 "3339FF","DD33FF","FF33B5","CBC6C7","302E2F","7C93B9"];
+			
+	player.change_color(colors[randi()%10])
 	player.name = str(peer_id);
-	print(player.name);
-	print(str(multiplayer.get_unique_id()))
+	
+	print(player.name + " joined");
+
 	add_child(player);
-	#if peer_id != multiplayer.get_unique_id():
-	local_player_character = player
-	local_player_character.rpc("setnick", player.name)
-	
-	var x = randi()%12
-	var colors = ["33AFFF","33FFF3","33FF96","5EFF33","E9FF33","FF7133",\
-		 "3339FF","DD33FF","FF33B5","CBC6C7","302E2F","7C93B9"];
-	#player.apply_player_color(colors[x])
-	
+
 	if player.is_multiplayer_authority():
 		player.health_changed.connect(update_health_bar);
 
 
-	
-		
-
-	
 	
 func remove_player(peer_id):
 	var player = get_node_or_null(str(peer_id));
@@ -87,6 +77,7 @@ func update_health_bar(health_val):
 func _on_multiplayer_spawner_spawned(node):
 	if node.is_multiplayer_authority():
 		node.health_changed.connect(update_health_bar);
+		
 		
 
 
@@ -107,5 +98,3 @@ func upnp_setup():
 	print("Success! Join Address: %s" % upnp.query_external_address())
 
 
-func _on_button_pressed():
-	local_player_character.rpc("setnick", local_player_character.name)

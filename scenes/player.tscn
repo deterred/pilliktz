@@ -5,6 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://dy8yr8gnk1u3f" path="res://addons/kenney_particle_pack/star_06.png" id="3_hrxlv"]
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_2vdvk"]
+resource_local_to_scene = true
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_0f3tq"]
 albedo_color = Color(1, 0.207843, 1, 1)

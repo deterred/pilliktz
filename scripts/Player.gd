@@ -1,7 +1,7 @@
 extends CharacterBody3D
 
 signal health_changed(health_value);
-signal set_nickname(nickname)
+
 
 @onready var camera = $Camera3D;
 @onready var anim_player = $AnimationPlayer;
@@ -10,9 +10,11 @@ signal set_nickname(nickname)
 
 @onready var playerBody = $body
 @onready var nicknamelabel = $playerid
+
+var player_color : Color = Color("000000");
+
+
 var health = 3;
-
-
 
 const SPEED = 10.0
 const JUMP_VELOCITY = 10
@@ -24,6 +26,11 @@ func _enter_tree():
 	set_multiplayer_authority(str(name).to_int());
 	
 func _ready():
+	if !is_multiplayer_authority():	
+		setnick();
+		#setcolor();
+
+
 	if not is_multiplayer_authority(): return;
 
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED;	
@@ -50,6 +57,8 @@ func _unhandled_input(event):
 		
 	
 func _physics_process(delta):
+
+		#setcolor();
 	if not is_multiplayer_authority(): return;
 	
 	# Add the gravity.
@@ -89,19 +98,25 @@ func play_shoot_effects():
 
 
 
-func apply_player_color(color):
+@rpc("any_peer")
+func sync_color(new_color: Color) -> void:
+	print("sync_color")
+	player_color = new_color
 	var material = playerBody.get_surface_override_material(0)
-	if material is StandardMaterial3D:
-
-		material.albedo_color = Color(color);
-		print("set color")
-		playerBody.set_surface_override_material(0, material)
+	material.albedo_color = player_color;
+	playerBody.set_surface_override_material(0, material)
+	
+func change_color(new_color: Color) -> void:
+	print("change_color "+ str(new_color))
+	player_color = new_color
+	rpc("sync_color", new_color)
 
 @rpc("any_peer", "call_local", "unreliable")
-func setnick(message):
-	print("setnick")
-	print(message)
-	nicknamelabel.text = message
+func setnick():
+	if not is_multiplayer_authority():
+		print("setnick" + str(name));		
+		nicknamelabel.text = str(name);
+		
 	
 @rpc("any_peer")
 func receive_damage():
