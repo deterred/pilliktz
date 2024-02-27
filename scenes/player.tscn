@@ -8,7 +8,7 @@
 resource_local_to_scene = true
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_0f3tq"]
-albedo_color = Color(1, 0.207843, 1, 1)
+albedo_color = Color(0.0745098, 0.721569, 0.8, 1)
 
 [sub_resource type="GDScript" id="GDScript_kvswm"]
 script/source = "extends MeshInstance3D

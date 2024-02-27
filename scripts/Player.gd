@@ -1,7 +1,7 @@
 extends CharacterBody3D
 
 signal health_changed(health_value);
-
+signal dead_changed(dead_value);
 
 @onready var camera = $Camera3D;
 @onready var anim_player = $AnimationPlayer;
@@ -15,6 +15,7 @@ var player_color : Color = Color("000000");
 
 
 var health = 3;
+var dead = 0;
 
 const SPEED = 10.0
 const JUMP_VELOCITY = 10
@@ -98,7 +99,7 @@ func play_shoot_effects():
 
 
 
-@rpc("any_peer")
+@rpc("call_remote")
 func sync_color(new_color: Color) -> void:
 	print("sync_color")
 	player_color = new_color
@@ -123,6 +124,10 @@ func receive_damage():
 	health -=1;
 	if (health <= 0):
 		health = 3;
+		dead +=1;
+		print("mort part " +str(multiplayer.get_remote_sender_id()))
+		 
+		dead_changed.emit(dead);
 		position = Vector3.ZERO;
 	health_changed.emit(health);
 
