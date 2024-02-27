@@ -1,0 +1,32 @@
+[gd_scene load_steps=10 format=3 uid="uid://b4nc2v1mvecs8"]
+
+[ext_resource type="PackedScene" uid="uid://dnkfgf13t1ikr" path="res://environment2.blend" id="1_1wfx0"]
+[ext_resource type="Texture2D" uid="uid://b1fa4uobw1hwm" path="res://addons/kenney_prototype_textures/orange/texture_09.png" id="2_fw2c2"]
+[ext_resource type="Texture2D" uid="uid://c2iqyfm2ha2a0" path="res://addons/kenney_prototype_textures/dark/texture_09.png" id="3_5uquo"]
+[ext_resource type="Texture2D" uid="uid://dnxsu2adsx2gy" path="res://addons/kenney_prototype_textures/dark/texture_01.png" id="4_ifw48"]
+[ext_resource type="Texture2D" uid="uid://cpkinxvp5h4uj" path="res://addons/kenney_prototype_textures/red/texture_09.png" id="5_ncksk"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_oc8l5"]
+albedo_texture = ExtResource("2_fw2c2")
+uv1_scale = Vector3(10, 10, 10)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_frngx"]
+albedo_texture = ExtResource("3_5uquo")
+uv1_scale = Vector3(20, 20, 20)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_amr6b"]
+albedo_texture = ExtResource("4_ifw48")
+uv1_scale = Vector3(10, 10, 10)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_y1rx7"]
+albedo_color = Color(0.54902, 0.54902, 0.54902, 1)
+albedo_texture = ExtResource("5_ncksk")
+uv1_scale = Vector3(8, 8, 8)
+
+[node name="environment2" instance=ExtResource("1_1wfx0")]
+
+[node name="Plan" parent="." index="0"]
+surface_material_override/0 = SubResource("StandardMaterial3D_oc8l5")
+surface_material_override/1 = SubResource("StandardMaterial3D_frngx")
+surface_material_override/2 = SubResource("StandardMaterial3D_amr6b")
+surface_material_override/3 = SubResource("StandardMaterial3D_y1rx7")

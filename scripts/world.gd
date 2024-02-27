@@ -57,6 +57,7 @@ func add_player(peer_id):
 
 	if player.is_multiplayer_authority():
 		player.health_changed.connect(update_health_bar);
+		player.dead_changed.connect(update_dead_bar);
 
 
 	
@@ -70,13 +71,17 @@ func remove_player(peer_id):
 func update_health_bar(health_val):
 	print("update_health_bar")
 	healthBar.value = health_val;
-	
+
+func update_dead_bar(dead_val):
+	print("update_dead")
+	$CanvasLayer/HUD/deadcount.text = "Mort : "+str(dead_val)+" fois"
 
 
 
 func _on_multiplayer_spawner_spawned(node):
 	if node.is_multiplayer_authority():
 		node.health_changed.connect(update_health_bar);
+		node.dead_changed.connect(update_dead_bar);
 		
 		
 

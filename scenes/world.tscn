@@ -1,7 +1,7 @@
 [gd_scene load_steps=9 format=3 uid="uid://bu76i0jyj7su2"]
 
 [ext_resource type="Script" path="res://scripts/world.gd" id="1_icop5"]
-[ext_resource type="PackedScene" uid="uid://d1w4a14s3bsh4" path="res://scenes/environment.tscn" id="1_n225s"]
+[ext_resource type="PackedScene" uid="uid://dclw1sv2qok8b" path="res://scenes/environnement_3.tscn" id="2_dga2a"]
 [ext_resource type="Texture2D" uid="uid://cwswpwl8ltsfg" path="res://addons/kenney_particle_pack/circle_05.png" id="3_7eno2"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_e1hm8"]
@@ -32,8 +32,6 @@ shadow_enabled = true
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_y1ii4")
-
-[node name="environment" parent="." instance=ExtResource("1_n225s")]
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
@@ -120,6 +118,15 @@ max_value = 3.0
 value = 3.0
 show_percentage = false
 
+[node name="deadcount" type="Label" parent="CanvasLayer/HUD"]
+layout_mode = 2
+offset_left = 1039.0
+offset_top = 54.0
+offset_right = 1131.0
+offset_bottom = 77.0
+size_flags_horizontal = 4
+text = "Mort : 0 fois"
+
 [node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/HUD"]
 layout_mode = 1
 anchors_preset = 1
@@ -142,6 +149,8 @@ text = "0000000000"
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="."]
 _spawnable_scenes = PackedStringArray("res://scenes/player.tscn")
 spawn_path = NodePath("..")
+
+[node name="environnement3" parent="." instance=ExtResource("2_dga2a")]
 
 [connection signal="pressed" from="CanvasLayer/MainMenu/MarginContainer/VBoxContainer/HostButton" to="." method="_on_host_button_pressed"]
 [connection signal="pressed" from="CanvasLayer/MainMenu/MarginContainer/VBoxContainer/JoinButton" to="." method="_on_join_button_pressed"]
