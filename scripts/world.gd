@@ -6,13 +6,17 @@ extends Node
 @onready var healthBar = $CanvasLayer/HUD/HealthBar
 @onready var nicknameLab = $CanvasLayer/HUD/MarginContainer/nickname
 @onready var msg =$CanvasLayer/HUD/MarginContainer/LineEdit 
-
+@onready var playernickname = $CanvasLayer/MainMenu/MarginContainer/VBoxContainer/playernickname
 const Player = preload("res://scenes/player.tscn")
 const PORT = 135;
 var enet_peer = ENetMultiplayerPeer.new();
 var local_player_character
 var peer_id 
 
+var colors = ["000000", "33AFFF","33FFF3","33FF96","5EFF33","E9FF33","FF7133",\
+			 "3339FF","DD33FF","FF33B5","CBC6C7","302E2F","7C93B9"];
+
+	
 func _unhandled_input(event):
 	if Input.is_action_just_pressed("quit"):
 		get_tree().quit();
@@ -27,6 +31,8 @@ func _on_host_button_pressed():
 	multiplayer.multiplayer_peer = enet_peer
 	multiplayer.peer_connected.connect(add_player)
 	multiplayer.peer_disconnected.connect(remove_player)
+	
+	
 	nicknameLab.text = "SERVER"
 	add_player(multiplayer.get_unique_id())
 	
@@ -45,19 +51,21 @@ func add_player(peer_id):
 	print('joueur connecté ');
 	var player = Player.instantiate();
 	
-	var colors = ["000000", "33AFFF","33FFF3","33FF96","5EFF33","E9FF33","FF7133",\
-			 "3339FF","DD33FF","FF33B5","CBC6C7","302E2F","7C93B9"];
-			
-	player.change_color(colors[randi()%10])
-	player.name = str(peer_id);
+
+
+	player.name = str(peer_id)
 	
 	print(player.name + " joined");
 
 	add_child(player);
 
 	if player.is_multiplayer_authority():
+		player.setname(playernickname.text)
 		player.health_changed.connect(update_health_bar);
 		player.dead_changed.connect(update_dead_bar);
+		
+			
+		player.set_color(Color(colors[randi()%10]))		
 
 
 	
@@ -82,7 +90,8 @@ func _on_multiplayer_spawner_spawned(node):
 	if node.is_multiplayer_authority():
 		node.health_changed.connect(update_health_bar);
 		node.dead_changed.connect(update_dead_bar);
-		
+		node.setname(playernickname.text)
+		node.set_color(Color(colors[randi()%10]))
 		
 
 

@@ -3,13 +3,16 @@ extends CharacterBody3D
 signal health_changed(health_value);
 signal dead_changed(dead_value);
 
-@onready var camera = $Camera3D;
+@export var currentcolor:Color
+@onready var head = $head
+@onready var camera = $head/Camera3D
 @onready var anim_player = $AnimationPlayer;
-@onready var muzzleflash = $Camera3D/pistol/MuzzleFlash;
-@onready var raycast = $Camera3D/RayCast3D;
+@onready var muzzleflash = $head/Camera3D/pistol/MuzzleFlash;
+@onready var raycast = $head/Camera3D/RayCast3D;
 
 @onready var playerBody = $body
-@onready var nicknamelabel = $playerid
+@onready var nicknamelabel = $head/MeshInstance3D/playerid
+var myname = "x"
 
 var player_color : Color = Color("000000");
 
@@ -25,27 +28,24 @@ var gravity = 20
 
 func _enter_tree():
 	set_multiplayer_authority(str(name).to_int());
+
 	
 func _ready():
-	if !is_multiplayer_authority():	
-		setnick();
-		#setcolor();
-
-
+	
 	if not is_multiplayer_authority(): return;
-
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED;	
 	camera.current = true;
 	
 
 
-func _unhandled_input(event):	
+func _unhandled_input(event):
+	
 	if not is_multiplayer_authority(): return;
 	
 	if event is InputEventMouseMotion:
 		rotate_y(-event.relative.x * 0.005);
-		camera.rotate_x(-event.relative.y * 0.005);
-		camera.rotation.x = clamp(camera.rotation.x, -PI/2, PI/2);
+		head.rotate_x(-event.relative.y * 0.005);
+		head.rotation.x = clamp(head.rotation.x, -PI/2, PI/2);
 		
 	if Input.is_action_just_pressed("shoot") and \
 	 anim_player.current_animation != "shot":
@@ -58,7 +58,7 @@ func _unhandled_input(event):
 		
 	
 func _physics_process(delta):
-
+	sync_color()
 		#setcolor();
 	if not is_multiplayer_authority(): return;
 	
@@ -99,25 +99,22 @@ func play_shoot_effects():
 
 
 
-@rpc("call_remote")
-func sync_color(new_color: Color) -> void:
-	print("sync_color")
-	player_color = new_color
+@rpc("call_local")
+func sync_color() -> void:
+	#print("sync_color")
+
 	var material = playerBody.get_surface_override_material(0)
-	material.albedo_color = player_color;
+	material.albedo_color = currentcolor;
 	playerBody.set_surface_override_material(0, material)
 	
-func change_color(new_color: Color) -> void:
+func set_color(new_color: Color) -> void:
 	print("change_color "+ str(new_color))
-	player_color = new_color
-	rpc("sync_color", new_color)
+	currentcolor = new_color
 
-@rpc("any_peer", "call_local", "unreliable")
-func setnick():
-	if not is_multiplayer_authority():
-		print("setnick" + str(name));		
-		nicknamelabel.text = str(name);
-		
+
+func setname(xxxxx):
+	nicknamelabel.text = xxxxx
+	print("setname")	
 	
 @rpc("any_peer")
 func receive_damage():
